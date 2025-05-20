@@ -1,1 +1,2 @@
-# ImageFeed
+# ImageFeed 1.0
+# 
