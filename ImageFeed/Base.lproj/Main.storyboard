@@ -245,6 +245,18 @@
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jho-Nf-B0a">
+                                        <rect key="frame" x="171.66666666666666" y="751" width="50" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="50" id="Ab9-ZH-gaw"/>
+                                            <constraint firstAttribute="height" constant="50" id="Hw5-N2-nMP"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" image="sharing_button"/>
+                                        <connections>
+                                            <action selector="didTapShareButton:" destination="ZHa-KM-sKU" eventType="touchUpInside" id="33Q-69-1zu"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="hNH-X2-iHm"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="99E-kB-mxD"/>
@@ -271,6 +283,8 @@
                             <constraint firstItem="u4y-nL-2uf" firstAttribute="trailing" secondItem="iQ3-Ew-DW9" secondAttribute="trailing" id="1Qa-md-LMj"/>
                             <constraint firstItem="obV-Dg-txt" firstAttribute="top" secondItem="u4y-nL-2uf" secondAttribute="top" constant="8" id="3nN-Wm-2Vi"/>
                             <constraint firstAttribute="top" secondItem="iQ3-Ew-DW9" secondAttribute="top" id="Ama-hQ-heU"/>
+                            <constraint firstItem="u4y-nL-2uf" firstAttribute="bottom" secondItem="Jho-Nf-B0a" secondAttribute="bottom" constant="17" id="Mre-yx-SSV"/>
+                            <constraint firstItem="Jho-Nf-B0a" firstAttribute="centerX" secondItem="u4y-nL-2uf" secondAttribute="centerX" id="NQ5-Bk-bQi"/>
                             <constraint firstItem="obV-Dg-txt" firstAttribute="leading" secondItem="u4y-nL-2uf" secondAttribute="leading" constant="8" id="Sdr-0U-prq"/>
                             <constraint firstItem="u4y-nL-2uf" firstAttribute="leading" secondItem="iQ3-Ew-DW9" secondAttribute="leading" id="cbT-gJ-DGV"/>
                             <constraint firstItem="iQ3-Ew-DW9" firstAttribute="bottom" secondItem="Tmo-ae-8c2" secondAttribute="bottom" id="g3K-7C-3tm"/>
@@ -294,6 +308,7 @@
         <image name="Rectangle 168" width="228.66667175292969" height="20"/>
         <image name="Userpick" width="70" height="70"/>
         <image name="nav_back_button_white" width="24" height="24"/>
+        <image name="sharing_button" width="50.333332061767578" height="50"/>
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="30" height="30"/>
         <namedColor name="YP Black">
