@@ -45,7 +45,7 @@
                                                         <constraint firstAttribute="width" constant="44" id="rXN-ge-ThG"/>
                                                     </constraints>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                    <state key="normal" image="No Active"/>
+                                                    <state key="normal" image="like_button_on"/>
                                                 </button>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Rectangle 168" translatesAutoresizingMaskIntoConstraints="NO" id="8Uw-ud-LLh" userLabel="Gradient">
                                                     <rect key="frame" x="16" y="238" width="361" height="30"/>
@@ -99,6 +99,7 @@
                             <constraint firstItem="RN5-qQ-0As" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="zcP-Qc-yLS"/>
                         </constraints>
                     </view>
+                    <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="Rkx-NX-0jV"/>
                     <navigationItem key="navigationItem" id="X6W-mn-hzi"/>
                     <connections>
                         <outlet property="tableView" destination="RN5-qQ-0As" id="R8d-k1-96l"/>
@@ -107,7 +108,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1023.6641221374045" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="73" y="-54"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="tVT-fZ-l5L">
@@ -123,8 +124,8 @@
                         </tabBarAppearance>
                     </tabBar>
                     <connections>
-                        <segue destination="bNm-5u-ExZ" kind="relationship" relationship="viewControllers" id="Bce-gI-wi7"/>
-                        <segue destination="Hdi-Iv-Mam" kind="relationship" relationship="viewControllers" id="0mQ-Lb-4lA"/>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="CHe-vp-Ccb"/>
+                        <segue destination="Hdi-Iv-Mam" kind="relationship" relationship="viewControllers" id="hux-H9-3WB"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bAP-qK-z7v" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -146,30 +147,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7A8-UH-hOA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="74" y="-772"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="2ZU-BB-VaZ">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="bNm-5u-ExZ" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="o4n-fT-ffN"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="2Us-J6-5WX">
-                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" name="YP White"/>
-                        <color key="barTintColor" name="YP White"/>
-                        <navigationBarAppearance key="standardAppearance">
-                            <color key="backgroundColor" name="YP Black"/>
-                        </navigationBarAppearance>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="B4P-p2-GeF"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="beT-Vg-PA5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="74.045801526717554" y="-2.1126760563380285"/>
         </scene>
         <!--Single Image View Controller-->
         <scene sceneID="aLX-SE-BVS">
@@ -239,13 +216,13 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zKm-SV-slN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1954.9618320610687" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="869" y="-54"/>
         </scene>
     </scenes>
     <resources>
         <image name="0" width="1600" height="1059"/>
-        <image name="No Active" width="44" height="44"/>
         <image name="Rectangle 168" width="228.66667175292969" height="20"/>
+        <image name="like_button_on" width="44" height="44"/>
         <image name="nav_back_button_white" width="24" height="24"/>
         <image name="sharing_button" width="50.333332061767578" height="50"/>
         <image name="tab_editorial_active" width="30" height="30"/>

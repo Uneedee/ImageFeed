@@ -2,16 +2,32 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    private var avatarImageView: UIImageView!
+    private var nameLabel: UILabel!
+    private var loginNameLabel: UILabel!
+    private var descriptionLabel: UILabel!
+    private var logoutButton: UIButton!
+    
     override func viewDidLoad() {
+        setupAvatarImageView()
+        setupNameLabel()
+        setupLoginNameLabel()
+        setupDescriptionLabel()
+        setupLogoutButton()
         super.viewDidLoad()
+    }
+    
+    private func setupAvatarImageView () {
         let profileImage = UIImage(named: "Userpick")
-        let avatarImageView = UIImageView(image: profileImage)
+        avatarImageView = UIImageView(image: profileImage)
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(avatarImageView)
         avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
-        
-        let nameLabel = UILabel()
+    }
+    
+    private func setupNameLabel() {
+        nameLabel = UILabel()
         nameLabel.text = "Екатерина Новикова"
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
@@ -19,8 +35,11 @@ final class ProfileViewController: UIViewController {
         nameLabel.textColor = .ypWhite
         nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 8).isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        
-        let loginNameLabel = UILabel()
+    }
+    
+    
+    private func setupLoginNameLabel() {
+        loginNameLabel = UILabel()
         loginNameLabel.text = "@ekaterina_nov"
         loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loginNameLabel)
@@ -28,18 +47,20 @@ final class ProfileViewController: UIViewController {
         loginNameLabel.textColor = .ypGray
         loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
         loginNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        
-        let descriptionLabel = UILabel()
+    }
+    private func setupDescriptionLabel() {
+        descriptionLabel = UILabel()
         descriptionLabel.text = "Hello, world!"
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(descriptionLabel)
         descriptionLabel.textColor = .ypWhite
         descriptionLabel.font = .systemFont(ofSize: 13)
         descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8).isActive = true
-        descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        
+        descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true }
+    
+    private func setupLogoutButton() {
         guard let buttonImage = UIImage(named: "ExitButton") else { return }
-        let logoutButton = UIButton.systemButton(
+        logoutButton = UIButton.systemButton(
             with: buttonImage,
             target: self,
             action: #selector(self.didTapLogoutButton))
