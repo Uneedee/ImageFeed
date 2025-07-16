@@ -25,7 +25,42 @@ struct OAuthTokenResponseBody: Decodable {
 
 final class OAuth2Service {
     static let shared = OAuth2Service()
+    private let decoder = JSONDecoder()
     private init() {}
+    
+    func fetchOAuthToken(code: String, completion: @escaping(Result<String, Error>) -> Void ) {
+        guard let request = makeOAuthTokenRequest(code: code) else {
+            let invalidRequest = NetworkError.invalidRequest
+            print("Ошибка. Неверный запрос \(invalidRequest)")
+            completion(.failure(invalidRequest))
+            return
+        }
+        let task = URLSession.shared.data(for: request) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let decoder = self.decoder
+                    let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+                    OAuth2TokenStorage.shared.tokenKey = responseBody.accessToken
+                    print("Токен успешно получен и сохранен")
+                    completion(.success(responseBody.accessToken))}
+                catch {
+                    completion(.failure(NetworkError.decodingError(error)))
+                    let decodingError = NetworkError.decodingError(error)
+                    print("Ошибка декодирования: \(decodingError)")
+                    }
+            case .failure(let error):
+                if let networkError = error as? NetworkError {
+                    print("Сетевая ошибка: \(networkError)")
+                }
+                else {
+                    print("Неизвестная ошибка: \(error)")
+                }
+                completion(.failure(error))
+                }
+            }
+        task.resume()
+        }
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: "https://unsplash.com/oauth/token") else {
@@ -49,39 +84,7 @@ final class OAuth2Service {
         return request
     }
     
-    func fetchOAuthToken(code: String, completion: @escaping(Result<String, Error>) -> Void ) {
-        guard let request = makeOAuthTokenRequest(code: code) else {
-            let invalidRequest = NetworkError.invalidRequest
-            print("Ошибка. Неверный запрос \(invalidRequest)")
-            completion(.failure(invalidRequest))
-            return
-        }
-        let task = URLSession.shared.data(for: request) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    OAuth2TokenStorage.shared.tokenKey = responseBody.accessToken
-                    print("Токен успешно получен и сохранен")
-                    completion(.success(responseBody.accessToken))}
-                catch {
-                    completion(.failure(NetworkError.decodingError(error)))
-                    let decodingError = NetworkError.decodingError(error)
-                    print("Ошибка декодирования: \(decodingError)")
-                    }
-            case .failure(let error):
-                if let networkError = error as? NetworkError {
-                    print("Сетевая ошибка: \(networkError)")
-                }
-                else {
-                    print("Неизвестная ошибка: \(error)")
-                }
-                completion(.failure(error))
-                }
-            }
-        task.resume()
-        }
+
     }
 
 extension URLSession {

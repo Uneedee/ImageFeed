@@ -41,8 +41,6 @@ final class WebViewViewController: UIViewController {
         updateProgress()
     }
     
-    
-
     override func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
