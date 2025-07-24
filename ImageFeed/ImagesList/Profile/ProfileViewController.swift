@@ -14,7 +14,17 @@ final class ProfileViewController: UIViewController {
         setupLoginNameLabel()
         setupDescriptionLabel()
         setupLogoutButton()
+        guard let profile = ProfileService.shared.profile else { return }
+        updateProfileDetails(with: profile)
         super.viewDidLoad()
+    }
+    
+    private func updateProfileDetails(with profile: Profile) {
+        nameLabel.text = profile.name.isEmpty ? "Имя не задано" : profile.name
+        loginNameLabel.text = profile.loginName.isEmpty ? "Логин не задан" : profile.loginName
+        descriptionLabel.text = profile.bio?.isEmpty == false ? profile.bio : ""
+        
+        
     }
     
     private func setupAvatarImageView () {

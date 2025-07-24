@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -13,6 +14,7 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -40,7 +42,9 @@ final class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         vc.dismiss(animated: true)
+        UIBlockingProgressHUD.show()
         OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
             guard let self = self else { return }
             switch result {
             case .success(let token):
@@ -48,6 +52,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 print("Успешно получен токен: \(token)")
             case .failure(let error):
                 print("Ошибка при получении токена: \(error)")
+                break
             }
             
         }

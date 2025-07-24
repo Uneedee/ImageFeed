@@ -1,6 +1,6 @@
 import UIKit
 
-enum NetworkError: Error {
+enum AuthServiceError: Error {
     case httpStatusCode(Int)
     case urlRequestError(Error)
     case urlSessionError
@@ -24,41 +24,68 @@ struct OAuthTokenResponseBody: Decodable {
 }
 
 final class OAuth2Service {
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
     static let shared = OAuth2Service()
     private let decoder = JSONDecoder()
     private init() {}
     
     func fetchOAuthToken(code: String, completion: @escaping(Result<String, Error>) -> Void ) {
-        guard let request = makeOAuthTokenRequest(code: code) else {
-            let invalidRequest = NetworkError.invalidRequest
+        assert(Thread.isMainThread)
+        if task != nil {
+            if lastCode != code {
+                task?.cancel()
+            } else {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
+            }
+        } else {
+            if lastCode == code {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
+            }
+        }
+        lastCode = code
+        guard
+            let request = makeOAuthTokenRequest(code: code)
+        else {
+            let invalidRequest = AuthServiceError.invalidRequest
             print("Ошибка. Неверный запрос \(invalidRequest)")
             completion(.failure(invalidRequest))
             return
         }
-        let task = URLSession.shared.data(for: request) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let decoder = self.decoder
-                    let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    OAuth2TokenStorage.shared.tokenKey = responseBody.accessToken
-                    print("Токен успешно получен и сохранен")
-                    completion(.success(responseBody.accessToken))}
-                catch {
-                    completion(.failure(NetworkError.decodingError(error)))
-                    let decodingError = NetworkError.decodingError(error)
-                    print("Ошибка декодирования: \(decodingError)")
+        let task = URLSession.shared.data(for: request) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    do {
+                        guard let decoder = self?.decoder else {
+                        print("Ошибка декодирования. Декодер не существует")
+                        return }
+                        let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+                        OAuth2TokenStorage.shared.tokenKey = responseBody.accessToken
+                        print("Токен успешно получен и сохранен")
+                        completion(.success(responseBody.accessToken))}
+                    catch {
+                        completion(.failure(AuthServiceError.decodingError(error)))
+                        let decodingError = AuthServiceError.decodingError(error)
+                        print("Ошибка декодирования: \(decodingError)")
                     }
-            case .failure(let error):
-                if let networkError = error as? NetworkError {
-                    print("Сетевая ошибка: \(networkError)")
+                case .failure(let error):
+                    if let networkError = error as? AuthServiceError {
+                        print("Сетевая ошибка: \(networkError)")
+                    }
+                    else {
+                        print("Неизвестная ошибка: \(error)")
+                    }
+                    completion(.failure(error))
                 }
-                else {
-                    print("Неизвестная ошибка: \(error)")
-                }
-                completion(.failure(error))
-                }
+                self?.task = nil
+                self?.lastCode = nil
             }
+        }
+        self.task = task
         task.resume()
         }
     
@@ -103,15 +130,15 @@ extension URLSession {
                 if 200 ..< 300 ~= statusCode {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
-                    fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
+                    fulfillCompletionOnTheMainThread(.failure(AuthServiceError.httpStatusCode(statusCode)))
                     print("Ошибка: \(statusCode)")
                 }
             } else if let error = error {
-                fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
+                fulfillCompletionOnTheMainThread(.failure(AuthServiceError.urlRequestError(error)))
                 print("Ошибка запроса: \(error)")
                 
             } else {
-                fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
+                fulfillCompletionOnTheMainThread(.failure(AuthServiceError.urlSessionError))
                 print("Ошибка URLSession")
             }
         })
