@@ -46,27 +46,21 @@ final class ProfileService {
             print("Отсутствует токен в хранилище")
             return
         }
-        let task = URLSession.shared.data(for: request) { [weak self] result in
-                switch result {
-                case .success(let data):
-                    do {
-                        let profileResult = try JSONDecoder().decode(ProfileResult.self, from: data)
-                        let profile = Profile(
-                            username: profileResult.username,
-                            name: "\(profileResult.firstname) \(profileResult.lastname)",
-                            loginName: "@\(profileResult.username)",
-                            bio: profileResult.bio)
-                        self?.profile = profile
-                        completion(.success(profile))
-                        print("Декодирование имени прошло успешно")
-                    }
-                    catch {
-                        completion(.failure(error))
-                    }
-                case.failure(let error):
-                    completion(.failure(error))
-                }
-                self?.task = nil
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result:Result<ProfileResult, Error>) in
+            switch result {
+            case .success(let data):
+                let profile = Profile(username: data.username,
+                                     name: "\(data.firstname) \(data.lastname)",
+                                     loginName: "@\(data.username)",
+                                     bio: data.bio)
+                self?.profile = profile
+                completion(.success(profile))
+                print("Экземпляр профиля создан успешно")
+            case .failure(let error):
+                completion(.failure(error))
+                print("Ошибка создания экземпляра профиля")
+            }
+            self?.task = nil
         }
         self.task = task
         task.resume()
