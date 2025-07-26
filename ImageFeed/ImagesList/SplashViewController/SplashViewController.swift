@@ -7,10 +7,12 @@ final class SplashViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+//        UserDefaults.standard.removeObject(forKey: "bearerToken")
 
         if let token = storage.tokenKey {
             switchToTabBarController()
             fetchProfile(token: token)
+            
         } else {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
@@ -47,8 +49,11 @@ extension SplashViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
+        print("Направление на экран аутентификации")
         vc.dismiss(animated: true)
-        guard storage.tokenKey != nil else { return }
+        print("WK скрыт")
+        print("Переходим к таб бару ")
+        switchToTabBarController()
         
         
     }

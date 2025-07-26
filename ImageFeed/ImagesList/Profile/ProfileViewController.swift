@@ -8,7 +8,10 @@ final class ProfileViewController: UIViewController {
     private var descriptionLabel: UILabel!
     private var logoutButton: UIButton!
     
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
+        super.viewDidLoad()
         setupAvatarImageView()
         setupNameLabel()
         setupLoginNameLabel()
@@ -16,7 +19,24 @@ final class ProfileViewController: UIViewController {
         setupLogoutButton()
         guard let profile = ProfileService.shared.profile else { return }
         updateProfileDetails(with: profile)
-        super.viewDidLoad()
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
     }
     
     private func updateProfileDetails(with profile: Profile) {

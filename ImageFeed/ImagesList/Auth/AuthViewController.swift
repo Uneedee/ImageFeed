@@ -12,6 +12,7 @@ final class AuthViewController: UIViewController {
     weak var delegate: AuthViewControllerDelegate?
     
     override func viewDidLoad() {
+        print("Показан экран аутентификации")
         super.viewDidLoad()
         configureBackButton()
         
@@ -47,11 +48,11 @@ extension AuthViewController: WebViewViewControllerDelegate {
             UIBlockingProgressHUD.dismiss()
             guard let self = self else { return }
             switch result {
-            case .success(let token):
+            case .success:
                 self.delegate?.didAuthenticate(self)
-                print("Успешно получен токен: \(token)")
             case .failure(let error):
                 print("Ошибка при получении токена: \(error)")
+                showAuthErrorAlert()
                 break
             }
             
@@ -62,5 +63,17 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
     }
     
-    
+    func showAuthErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так" ,
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert)
+        
+        let alertAction = UIAlertAction(
+            title: "Ок",
+            style: .default)
+        alertController.addAction(alertAction)
+        present(alertController, animated: true, completion: nil)
+        
+    }
 }

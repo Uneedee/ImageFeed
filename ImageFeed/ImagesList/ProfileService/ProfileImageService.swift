@@ -29,6 +29,10 @@ final class ProfileImageService {
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
     
+    
+    
+    
+    
     func makeProfileImageRequest(username: String, token: String) -> URLRequest? {
         guard let url = URL(string: "https://api.unsplash.com/me/users:\(username)") else { return nil }
         var request = URLRequest(url: url)
@@ -47,23 +51,22 @@ final class ProfileImageService {
         guard let request = makeProfileImageRequest(username: username, token: token) else { return
             completion(.failure(URLError(.badURL)))
         }
-        let task = URLSession.shared.data(for: request) { [weak self] result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             switch result {
-            case.success(let data):
-                do {
-                    let profileImageResult = try JSONDecoder().decode(UserResult.self, from: data)
-                    self?.avatarURL = profileImageResult.profileImage.small
-                    completion(.success(profileImageResult.profileImage.small))
-                }
-                catch {
-                    completion(.failure(error))
-                    print(error)
-                }
-            case.failure(let error):
+            case .success(let data):
+                guard let self = self else { return }
+                self.avatarURL = data.profileImage.small
+                completion(.success(data.profileImage.small))
+                NotificationCenter.default
+                    .post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": data.profileImage.small ])
+            case .failure(let error):
                 completion(.failure(error))
+                print(error)
                 
             }
-            self?.task = nil
         }
         self.task = task
         task.resume()
