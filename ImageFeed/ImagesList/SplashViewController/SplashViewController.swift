@@ -4,6 +4,9 @@ final class SplashViewController: UIViewController {
     let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let profileService = ProfileService.shared
     private let storage = OAuth2TokenStorage.shared.self
+    deinit {
+        print("⚠️ SplashViewController DEALLOCATED")
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -62,8 +65,13 @@ extension SplashViewController: AuthViewControllerDelegate {
         print("Вызван fetchProfile ")
         UIBlockingProgressHUD.show()
         profileService.fetchProfile(token) { [weak self] result in
+            print("Проверка замыкания")
+            print("Raw result:", result)
             UIBlockingProgressHUD.dismiss()
-            guard let self = self else { return }
+            print("Проверка weak self")
+            guard let self = self else {
+                print("self is nil!") // Проблема тут
+                return }
             switch result {
             case .success(let profile):
                 print("Попытка загрузки изображения")

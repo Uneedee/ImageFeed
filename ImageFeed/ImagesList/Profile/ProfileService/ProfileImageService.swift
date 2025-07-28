@@ -34,7 +34,9 @@ final class ProfileImageService {
     
     
     func makeProfileImageRequest(username: String, token: String) -> URLRequest? {
-        guard let url = URL(string: "https://api.unsplash.com/me/users:\(username)") else { return nil }
+        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+            return nil
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -43,13 +45,17 @@ final class ProfileImageService {
     }
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
+        print("Вызван метод fetchProfileImageURL")
         task?.cancel()
         guard let token = OAuth2TokenStorage.shared.tokenKey else {
+            completion(.failure(NSError(domain: "ProfileImageService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Authorization token missing"])))
+
             print("Ошибка. Токен отсутствует")
             return
         }
-        guard let request = makeProfileImageRequest(username: username, token: token) else { return
+        guard let request = makeProfileImageRequest(username: username, token: token) else {
             completion(.failure(URLError(.badURL)))
+            return
         }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             switch result {

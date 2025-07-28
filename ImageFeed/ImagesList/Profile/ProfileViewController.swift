@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -36,7 +37,12 @@ final class ProfileViewController: UIViewController {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
+                
         else { return }
+        avatarImageView.kf.setImage(with: url)
+        
+        
+        
     }
     
     private func updateProfileDetails(with profile: Profile) {

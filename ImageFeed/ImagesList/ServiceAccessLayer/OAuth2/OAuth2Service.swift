@@ -81,43 +81,9 @@ final class OAuth2Service {
         }
         self.task = task
         task.resume()
-        
         }
-//        let task = URLSession.shared.data(for: request) { [weak self] result in
-//            DispatchQueue.main.async {
-//
-//                switch result {
-//                case .success(let data):
-//                    do {
-//                        guard let decoder = self?.decoder else {
-//                        print("Ошибка декодирования. Декодер не существует")
-//                        return }
-//                        let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-//                        OAuth2TokenStorage.shared.tokenKey = responseBody.accessToken
-//                        print("Токен успешно получен и сохранен")
-//                        completion(.success(responseBody.accessToken))}
-//                    catch {
-//                        completion(.failure(AuthServiceError.decodingError(error)))
-//                        let decodingError = AuthServiceError.decodingError(error)
-//                        print("Ошибка декодирования: \(decodingError)")
-//                    }
-//                case .failure(let error):
-//                    if let networkError = error as? AuthServiceError {
-//                        print("Сетевая ошибка: \(networkError)")
-//                    }
-//                    else {
-//                        print("Неизвестная ошибка: \(error)")
-//                    }
-//                    completion(.failure(error))
-//                    
-//                    self?.task = nil
-//                    self?.lastCode = nil
-//                }
             }
         
-//        self.task = task
-//        task.resume()
-//        }
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: "https://unsplash.com/oauth/token") else {
@@ -150,6 +116,7 @@ extension URLSession {
         completion: @escaping (Result<T, Error>) -> Void
     ) -> URLSessionTask {
         let decoder = JSONDecoder()
+//        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let task = data(for: request) { (result: Result<Data, Error>) in
                 switch result {
                 case .success(let data):
