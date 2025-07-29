@@ -39,7 +39,14 @@ final class ProfileViewController: UIViewController {
             let url = URL(string: profileImageURL)
                 
         else { return }
-        avatarImageView.kf.setImage(with: url)
+        let processor = RoundCornerImageProcessor(cornerRadius: 45)
+        
+
+        avatarImageView.kf.indicatorType = .activity
+        avatarImageView.kf.setImage(with: url,
+                                    placeholder: UIImage(named: "tab_profile_noactive"),
+                                    options: [.processor(processor),
+                                              .scaleFactor(UIScreen.main.scale)])
         
         
         
@@ -56,7 +63,10 @@ final class ProfileViewController: UIViewController {
     private func setupAvatarImageView () {
         let profileImage = UIImage(named: "Userpick")
         avatarImageView = UIImageView(image: profileImage)
+        avatarImageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        avatarImageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(avatarImageView)
         avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true

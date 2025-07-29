@@ -64,14 +64,14 @@ extension SplashViewController: AuthViewControllerDelegate {
     func fetchProfile(token: String) {
         print("Вызван fetchProfile ")
         UIBlockingProgressHUD.show()
-        profileService.fetchProfile(token) { [weak self] result in
+        profileService.fetchProfile(token) { [self] result in
             print("Проверка замыкания")
             print("Raw result:", result)
             UIBlockingProgressHUD.dismiss()
             print("Проверка weak self")
-            guard let self = self else {
-                print("self is nil!") // Проблема тут
-                return }
+//            guard let self = self else {
+//                print("self is nil!") // Проблема тут
+//                return }
             switch result {
             case .success(let profile):
                 print("Попытка загрузки изображения")
