@@ -18,6 +18,7 @@ final class ProfileViewController: UIViewController {
         setupLoginNameLabel()
         setupDescriptionLabel()
         setupLogoutButton()
+        view.backgroundColor = .ypBlack
         guard let profile = ProfileService.shared.profile else { return }
         updateProfileDetails(with: profile)
         profileImageServiceObserver = NotificationCenter.default
@@ -39,7 +40,7 @@ final class ProfileViewController: UIViewController {
             let url = URL(string: profileImageURL)
                 
         else { return }
-        let processor = RoundCornerImageProcessor(cornerRadius: 45)
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
         
 
         avatarImageView.kf.indicatorType = .activity
@@ -68,6 +69,8 @@ final class ProfileViewController: UIViewController {
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
 
         view.addSubview(avatarImageView)
+        avatarImageView.layer.cornerRadius = 35
+        avatarImageView.layer.masksToBounds = true
         avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
     }
