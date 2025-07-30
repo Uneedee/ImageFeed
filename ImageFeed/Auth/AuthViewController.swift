@@ -1,6 +1,7 @@
 import UIKit
 import WebKit
 
+
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
 }
@@ -11,8 +12,10 @@ final class AuthViewController: UIViewController {
     weak var delegate: AuthViewControllerDelegate?
     
     override func viewDidLoad() {
+        print("Показан экран аутентификации")
         super.viewDidLoad()
         configureBackButton()
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -40,14 +43,19 @@ final class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         vc.dismiss(animated: true)
+        UIBlockingProgressHUD.show()
         OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
-            guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
+            guard let self = self else {
+                print("self is nil")
+                return }
             switch result {
-            case .success(let token):
+            case .success:
                 self.delegate?.didAuthenticate(self)
-                print("Успешно получен токен: \(token)")
             case .failure(let error):
                 print("Ошибка при получении токена: \(error)")
+                showAuthErrorAlert()
+                break
             }
             
         }
@@ -57,5 +65,17 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
     }
     
-    
+    func showAuthErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так(" ,
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert)
+        
+        let alertAction = UIAlertAction(
+            title: "OK",
+            style: .default)
+        alertController.addAction(alertAction)
+        present(alertController, animated: true, completion: nil)
+        
+    }
 }

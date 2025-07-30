@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -8,20 +9,68 @@ final class ProfileViewController: UIViewController {
     private var descriptionLabel: UILabel!
     private var logoutButton: UIButton!
     
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
+        super.viewDidLoad()
         setupAvatarImageView()
         setupNameLabel()
         setupLoginNameLabel()
         setupDescriptionLabel()
         setupLogoutButton()
-        super.viewDidLoad()
+        view.backgroundColor = .ypBlack
+        guard let profile = ProfileService.shared.profile else { return }
+        updateProfileDetails(with: profile)
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+        
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+                
+        else { return }
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
+        
+        
+        avatarImageView.kf.indicatorType = .activity
+        avatarImageView.kf.setImage(with: url,
+                                    placeholder: UIImage(named: "tab_profile_noactive"),
+                                    options: [.processor(processor),
+                                              .scaleFactor(UIScreen.main.scale)])
+        
+        
+        
+    }
+    
+    private func updateProfileDetails(with profile: Profile) {
+        nameLabel.text = profile.name.isEmpty ? "Имя не задано" : profile.name
+        loginNameLabel.text = profile.loginName.isEmpty ? "Логин не задан" : profile.loginName
+        descriptionLabel.text = profile.bio?.isEmpty == false ? profile.bio : ""
+        
+        
     }
     
     private func setupAvatarImageView () {
         let profileImage = UIImage(named: "Userpick")
         avatarImageView = UIImageView(image: profileImage)
+        avatarImageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        avatarImageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(avatarImageView)
+        avatarImageView.layer.cornerRadius = 35
+        avatarImageView.layer.masksToBounds = true
         avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
     }
