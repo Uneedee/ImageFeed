@@ -28,13 +28,8 @@ final class ProfileImageService {
     private init() {}
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
-    
-    
-    
-    
-    
     func makeProfileImageRequest(username: String, token: String) -> URLRequest? {
-        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+        guard let url = URL(string: "\(ProfileImageConstants.unsplashFetchProfileImageURLString)\(username)") else { print("Ошибка в URL получения изображения")
             return nil
         }
         var request = URLRequest(url: url)
@@ -49,7 +44,7 @@ final class ProfileImageService {
         task?.cancel()
         guard let token = OAuth2TokenStorage.shared.tokenKey else {
             completion(.failure(NSError(domain: "ProfileImageService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Authorization token missing"])))
-
+            
             print("Ошибка. Токен отсутствует")
             return
         }

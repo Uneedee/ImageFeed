@@ -1,25 +1,25 @@
 import UIKit
 
-    struct Profile{
-        let username: String
-        let name: String
-        let loginName: String
-        let bio: String?
-    }
+struct Profile{
+    let username: String
+    let name: String
+    let loginName: String
+    let bio: String?
+}
+
+struct ProfileResult: Codable {
+    let username: String
+    let firstname: String
+    let lastname: String
+    let bio: String?
     
-    struct ProfileResult: Codable {
-        let username: String
-        let firstname: String
-        let lastname: String
-        let bio: String?
-        
-        private enum CodingKeys: String, CodingKey {
-            case username
-            case firstname = "first_name"
-            case lastname = "last_name"
-            case bio
-        }
+    private enum CodingKeys: String, CodingKey {
+        case username
+        case firstname = "first_name"
+        case lastname = "last_name"
+        case bio
     }
+}
 
 final class ProfileService {
     private var task: URLSessionTask?
@@ -29,7 +29,7 @@ final class ProfileService {
     private(set) var profile: Profile?
     
     func makeProfileRequest(token: String) -> URLRequest? {
-        guard let url = URL(string: "https://api.unsplash.com/me") else {
+        guard let url = URL(string: ProfileConstants.unsplashFetchProfileURLString) else {
             return nil
         }
         var request = URLRequest(url: url)
@@ -50,9 +50,9 @@ final class ProfileService {
             switch result {
             case .success(let data):
                 let profile = Profile(username: data.username,
-                                     name: "\(data.firstname) \(data.lastname)",
-                                     loginName: "@\(data.username)",
-                                     bio: data.bio)
+                                      name: "\(data.firstname) \(data.lastname)",
+                                      loginName: "@\(data.username)",
+                                      bio: data.bio)
                 self?.profile = profile
                 completion(.success(profile))
                 print("Экземпляр профиля создан успешно")

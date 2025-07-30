@@ -1,6 +1,6 @@
 import UIKit
 import WebKit
-import ProgressHUD
+
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -67,12 +67,12 @@ extension AuthViewController: WebViewViewControllerDelegate {
     
     func showAuthErrorAlert() {
         let alertController = UIAlertController(
-            title: "Что-то пошло не так" ,
+            title: "Что-то пошло не так(" ,
             message: "Не удалось войти в систему",
             preferredStyle: .alert)
         
         let alertAction = UIAlertAction(
-            title: "Ок",
+            title: "OK",
             style: .default)
         alertController.addAction(alertAction)
         present(alertController, animated: true, completion: nil)

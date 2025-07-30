@@ -31,7 +31,7 @@ final class ProfileViewController: UIViewController {
                 self.updateAvatar()
             }
         updateAvatar()
-
+        
     }
     
     private func updateAvatar() {
@@ -42,7 +42,7 @@ final class ProfileViewController: UIViewController {
         else { return }
         let processor = RoundCornerImageProcessor(cornerRadius: 35)
         
-
+        
         avatarImageView.kf.indicatorType = .activity
         avatarImageView.kf.setImage(with: url,
                                     placeholder: UIImage(named: "tab_profile_noactive"),
@@ -67,7 +67,7 @@ final class ProfileViewController: UIViewController {
         avatarImageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
         avatarImageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         view.addSubview(avatarImageView)
         avatarImageView.layer.cornerRadius = 35
         avatarImageView.layer.masksToBounds = true

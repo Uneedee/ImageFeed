@@ -8,15 +8,13 @@ final class SplashViewController: UIViewController {
     deinit {
         print("⚠️ SplashViewController DEALLOCATED")
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setupImageView()
         setupVCAttributes()
-//        KeychainWrapper.standard.removeObject(forKey: "bearerToken")
-//        UserDefaults.standard.removeObject(forKey: "bearerToken")
+        //        KeychainWrapper.standard.removeObject(forKey: "bearerToken")
         if let token = storage.tokenKey {
-            switchToTabBarController()
             fetchProfile(token: token)
             
         } else {
@@ -42,7 +40,7 @@ final class SplashViewController: UIViewController {
         imageView.widthAnchor.constraint(equalToConstant: 75).isActive = true
         imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-
+        
         
         
     }
@@ -66,27 +64,23 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
-        switchToTabBarController()
         
         
     }
     
     func fetchProfile(token: String) {
         UIBlockingProgressHUD.show()
-        profileService.fetchProfile(token) { [self] result in
+        profileService.fetchProfile(token) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
-//            guard let self = self else {
-//                print("self is nil!")
-//                return }
             switch result {
             case .success(let profile):
                 print("Попытка загрузки изображения")
                 ProfileImageService.shared.fetchProfileImageURL(username: profile.username) { _ in }
-                switchToTabBarController()
+                self?.switchToTabBarController()
             case .failure(let error):
                 print("Ошибка получения профиля: \(error)")
             }
-
+            
         }
         
         
