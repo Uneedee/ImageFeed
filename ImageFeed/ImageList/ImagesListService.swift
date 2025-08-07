@@ -54,38 +54,54 @@ final class ImagesListService {
     private var lastLoadedPage: Int?
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
-    func makeImageListRequest(token: String) -> URLRequest? {
-        guard let url = URL(string: "\(ImageListUrl.unsplashFetchRequestMakeImageList)") else {
-            print("Ошибка URL при получении фотографий")
-            return nil
-        }
+    func makeImageListRequest(page: Int, perPage: Int, token: String) -> URLRequest? {
+        
+
+        let baseURL = ImageListUrl.unsplashFetchRequestMakeImageList
+        var components = URLComponents(string: "\(baseURL)")
+        components?.queryItems = [
+            URLQueryItem(name: "page", value: "\(page)"),
+            URLQueryItem(name: "per_page", value: "\(perPage)")
+        ]
+        
+        guard let url = components?.url else { return nil }
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }
     
-    func fetchPhotosNextPage(_ completion: @escaping (Result<String, Error>) -> Void)  {
-        task?.cancel()
+    func fetchPhotosNextPage(_ completion: @escaping (Result<[Photo], Error>) -> Void)  {
+        if task != nil {
+            task?.cancel()
+        }
+        
         let nextPage = (lastLoadedPage ?? 0) + 1
         guard let token = OAuth2TokenStorage.shared.tokenKey else { return }
-        guard let request = makeImageListRequest(token: token) else { return }
-        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<PhotoResult, Error>) in switch result {
-        case .success(let data):
+        guard let request = makeImageListRequest(page: nextPage, perPage: 10, token: token) else { return }
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in switch result {
+        case .success(let photoResults):
             guard let self = self else { return }
-            let photo = Photo(id: data.id,
-                              size: CGSize(width: data.width, height: data.height),
-                              createdAt: data.createdAt,
-                              welcomeDescription: data.description,
-                              thumbImageURL: data.imageURL.thumb,
-                              largeImageURL: data.imageURL.full,
-                              isLiked: data.likedByUser)
+            for photoResult in photoResults {
+                let photo = Photo(id: photoResult.id,
+                                  size: CGSize(width: photoResult.width, height: photoResult.height),
+                                  createdAt: photoResult.createdAt,
+                                  welcomeDescription: photoResult.description,
+                                  thumbImageURL: photoResult.imageURL.thumb,
+                                  largeImageURL: photoResult.imageURL.full,
+                                  isLiked: photoResult.likedByUser)
+                photos.append(photo)
+            }
+            self.lastLoadedPage = nextPage
             NotificationCenter.default.post(
                 name: ImagesListService.didChangeNotification,
                 object: nil,
-                userInfo: ["photo" : photo])
+                userInfo: ["photos" : photos])
+            completion(.success(photos))
         case .failure(let error):
             completion(.failure(error))
+            return
         }
         }
         self.task = task
