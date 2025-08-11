@@ -1,12 +1,17 @@
 import UIKit
+import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
     @IBOutlet private var tableView: UITableView!
     
+    let imagesListService = ImagesListService.shared
+    
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     
     private let currentDate = Date()
+    
+    var photos: [Photo] = []
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     
@@ -20,6 +25,19 @@ final class ImagesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+    
+    func updateTableViewAnimated() {
+        var oldPhotosCount = photos.count
+        var newPhotosCount = imagesListService.photos.count
+        var indexPath: [IndexPath] = []
+        for i in oldPhotosCount..<newPhotosCount {
+            indexPath.append(IndexPath(row: i, section: 0))
+        }
+        tableView.performBatchUpdates {
+            tableView.insertRows(at: indexPath, with: .automatic)
+        } completion: { _ in }
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -43,7 +61,8 @@ final class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        photosName.count
+//        photosName.count
+        photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -61,10 +80,12 @@ extension ImagesListViewController: UITableViewDataSource {
 
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            return
-        }
-        cell.cellImage.image = image
+        var photo = photos[indexPath.row]
+        var photoUrl = URL(string: photo.thumbImageURL)
+                
+        cell.cellImage.kf.setImage(
+            with: photoUrl,
+            placeholder: UIImage(named: "placeholder"))
         cell.dateLabel.text = dateFormatter.string(from: currentDate)
         
         let isLiked = indexPath.row % 2 == 0

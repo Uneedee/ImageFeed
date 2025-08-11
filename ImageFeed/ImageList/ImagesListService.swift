@@ -4,7 +4,7 @@ struct PhotoResult: Codable {
     let id: String
     let width: Int
     let height: Int
-    let createdAt: Date?
+    let createdAt: String
     let description: String?
     let imageURL: UrlsResult
     let likedByUser: Bool
@@ -51,6 +51,9 @@ final class ImagesListService {
     private(set) var photos: [Photo] = []
     private var task: URLSessionTask?
     
+    static let shared = ImagesListService()
+    private init() {}
+    
     private var lastLoadedPage: Int?
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
@@ -86,7 +89,7 @@ final class ImagesListService {
             for photoResult in photoResults {
                 let photo = Photo(id: photoResult.id,
                                   size: CGSize(width: photoResult.width, height: photoResult.height),
-                                  createdAt: photoResult.createdAt,
+                                  createdAt: parseDate(from: photoResult.createdAt),
                                   welcomeDescription: photoResult.description,
                                   thumbImageURL: photoResult.imageURL.thumb,
                                   largeImageURL: photoResult.imageURL.full,
@@ -106,6 +109,18 @@ final class ImagesListService {
         }
         self.task = task
         task.resume()
+    }
+    
+    private func parseDate(from dateString: String?) -> Date? {
+        guard let dateString = dateString else { return nil }
+        
+        let formatter = ISO8601DateFormatter()
+        return formatter.date(from: dateString)
+    }
+    
+    // Перегрузка для тестирования через NotificationCenter
+    func fetchPhotosNextPage() {
+        fetchPhotosNextPage { _ in }
     }
 }
 
