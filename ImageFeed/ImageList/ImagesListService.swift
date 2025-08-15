@@ -5,6 +5,8 @@ struct PhotoResult: Codable {
     let width: Int
     let height: Int
     let createdAt: String
+    // Тут по курсу должны получать Date? Но я при декодировании получал краш, т.к. не получалось привести строку к Date?. Ии посоветовал
+    // сделать метод parseDate()
     let description: String?
     let imageURL: UrlsResult
     let likedByUser: Bool
@@ -50,11 +52,10 @@ struct Photo {
 final class ImagesListService {
     private(set) var photos: [Photo] = []
     private var task: URLSessionTask?
-    
     static let shared = ImagesListService()
-    private init() {}
-    
+
     private var lastLoadedPage: Int?
+    
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
     func makeImageListRequest(page: Int, perPage: Int, token: String) -> URLRequest? {
@@ -75,7 +76,7 @@ final class ImagesListService {
         return request
     }
     
-    func fetchPhotosNextPage(_ completion: @escaping (Result<[Photo], Error>) -> Void)  {
+    func fetchPhotosNextPage(/*_ completion: @escaping (Result<[Photo], Error>) -> Void*/) {
         if task != nil {
             task?.cancel()
         }
@@ -94,16 +95,17 @@ final class ImagesListService {
                                   thumbImageURL: photoResult.imageURL.thumb,
                                   largeImageURL: photoResult.imageURL.full,
                                   isLiked: photoResult.likedByUser)
-                photos.append(photo)
+                    self.photos.append(photo)
+                
             }
             self.lastLoadedPage = nextPage
             NotificationCenter.default.post(
                 name: ImagesListService.didChangeNotification,
                 object: nil,
                 userInfo: ["photos" : photos])
-            completion(.success(photos))
-        case .failure(let error):
-            completion(.failure(error))
+//            completion(.success(photos))
+        case .failure:
+//            completion(.failure(error))
             return
         }
         }
@@ -117,13 +119,4 @@ final class ImagesListService {
         let formatter = ISO8601DateFormatter()
         return formatter.date(from: dateString)
     }
-    
-    // Перегрузка для тестирования через NotificationCenter
-    func fetchPhotosNextPage() {
-        fetchPhotosNextPage { _ in }
-    }
 }
-
-// 1. Нужно получить URLы фотографий, предварительно делая проверку страницы и сохраняя номер последней страницы. Количество фотографий за сессию - 10шт.
-// 2. Декодировать ответ и привести его структуре
-// 3. Урлы сохранять в массив
