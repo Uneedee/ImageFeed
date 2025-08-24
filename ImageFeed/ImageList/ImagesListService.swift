@@ -1,12 +1,30 @@
 import UIKit
 
+
+struct PhotoIsLiked: Codable {
+    let photo: PhotoLike
+    
+    private enum CodingKeys: String, CodingKey {
+        case photo = "photo"
+    }
+    
+}
+
+struct PhotoLike: Codable {
+    let id: String
+    let likedByUser: Bool
+    
+    private enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case likedByUser = "liked_by_user"
+    }
+}
+
 struct PhotoResult: Codable {
     let id: String
     let width: Int
     let height: Int
     let createdAt: String
-    // Тут по курсу должны получать Date? Но я при декодировании получал краш, т.к. не получалось привести строку к Date?. Ии посоветовал
-    // сделать метод parseDate()
     let description: String?
     let imageURL: UrlsResult
     let likedByUser: Bool
@@ -46,7 +64,7 @@ struct Photo {
     let welcomeDescription: String?
     let thumbImageURL: String
     let largeImageURL: String
-    let isLiked: Bool
+    var isLiked: Bool
 }
 
 final class ImagesListService {
@@ -76,7 +94,7 @@ final class ImagesListService {
         return request
     }
     
-    func fetchPhotosNextPage(/*_ completion: @escaping (Result<[Photo], Error>) -> Void*/) {
+    func fetchPhotosNextPage() {
         if task != nil {
             task?.cancel()
         }
@@ -95,7 +113,7 @@ final class ImagesListService {
                                   thumbImageURL: photoResult.imageURL.thumb,
                                   largeImageURL: photoResult.imageURL.full,
                                   isLiked: photoResult.likedByUser)
-                    self.photos.append(photo)
+                self.photos.append(photo)
                 
             }
             self.lastLoadedPage = nextPage
@@ -103,9 +121,7 @@ final class ImagesListService {
                 name: ImagesListService.didChangeNotification,
                 object: nil,
                 userInfo: ["photos" : photos])
-//            completion(.success(photos))
         case .failure:
-//            completion(.failure(error))
             return
         }
         }
@@ -119,4 +135,82 @@ final class ImagesListService {
         let formatter = ISO8601DateFormatter()
         return formatter.date(from: dateString)
     }
+    
+    // Имеем массив фотографий. Когда ставим лайк, то отправляем сетевой запрос, в котором берем 2 параметра из этой структуры. id, isLike.
+    //
+    
+    func changeLike(photoId: String, _ completion: @escaping (Result<Void, Error>) -> Void)  {
+        
+        var request: URLRequest?
+        
+        if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+            let photo = self.photos[index]
+            if photo.isLiked == true { request = makePhotosDislikeRequest(id: photoId) } else { request = makePhotosLikeRequest(id: photoId)}
+        }
+        
+        guard let makeRequest = request else { return }
+        
+        let task = URLSession.shared.objectTask(for: makeRequest) { [weak self] (result: Result<PhotoIsLiked, Error>) in switch result {
+        case .success:
+            guard let self = self else { return }
+            if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                let photo = self.photos[index]
+                let newPhoto = Photo(
+                    id: photo.id,
+                    size: photo.size,
+                    createdAt: photo.createdAt,
+                    welcomeDescription: photo.welcomeDescription,
+                    thumbImageURL: photo.thumbImageURL,
+                    largeImageURL: photo.largeImageURL,
+                    isLiked: !photo.isLiked
+                )
+                self.photos[index] = newPhoto
+            }
+            completion(.success(()))
+
+        case .failure(let error):
+            completion(.failure(error))
+        }
+        }
+        task.resume()
+        
+    }
+    
+    func makePhotosLikeRequest(id: String) -> URLRequest? {
+        
+        let baseUrl = ImageListUrl.unsplashFetchRequestMakeImageList
+        
+        guard let url = URL(string: "\(baseUrl)/\(id)/like") else { return nil }
+        guard let token = OAuth2TokenStorage.shared.tokenKey else { print("Токен отсутствует")
+            return nil }
+                
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        return request
+        
+    }
+    
+    
+    func makePhotosDislikeRequest(id: String) -> URLRequest? {
+        
+        //Всегда ли нужно добавлять хеддер при запросах?
+        
+        let baseUrl = ImageListUrl.unsplashFetchRequestMakeImageList
+        
+        guard let url = URL(string: "\(baseUrl)/\(id)/like") else { return nil }
+        guard let token = OAuth2TokenStorage.shared.tokenKey else { print("Токен отсутствует")
+            return nil }
+        
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        return request
+        
+    }
+    
+    
+    
 }

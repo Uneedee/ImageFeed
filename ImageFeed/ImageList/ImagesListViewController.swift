@@ -1,7 +1,10 @@
 import UIKit
 import Kingfisher
 
-final class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
+    
+
+    
     
     @IBOutlet private var tableView: UITableView!
     
@@ -24,9 +27,6 @@ final class ImagesListViewController: UIViewController {
     }()
     
     override func viewDidLoad() {
-        // !Проблема. ЧТобы рассчитать количество строк, нужно чтобы локальный массив был заполнен. А чтобы обновить, нужна разница между старым и новым (т.е. массив должен быть пуст)
-        // Где-то тут мы должны получить массив фотографий из listService по ключу из нотификатора и что-то с ним сделать.
-    // Надо почитать как извлекать этот массив по ключу и подумать как через него обновлять локальный массив. После этого мы уже спокойно сможем строить таблицу (По-идее)
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         imageListServiceObserver = NotificationCenter.default.addObserver(
@@ -38,17 +38,10 @@ final class ImagesListViewController: UIViewController {
                 
             }
         imagesListService.fetchPhotosNextPage()
-        
-        // Тут добавляем нотификацию, которая отслеживает запрос в сеть. (Эта штука нужна только для повторных сетевых запросов) Если он есть, то начинаем подготовку ячеек.
-        // Проблема в том что мы должны где-то сразу при входе сделать запрос в сеть, чтобы таблица поняла сколько должно быть строк. Возможно сразу стоит вызвать метод fetchPhotosNextPage.
-        // С другой стороны у нас есть метод tableView(_ tableView: UITableView, willDisplay), который уже должен вызывать метод fetchPhotosNextPage. Вопрос в том что вызывается по списку раньше.
-        // Если tableView(_ tableView: UITableView, willDisplay), то все ок и вызывать из viewDidLoad() метод fetchPhotosNextPage. не нужно. А если tableView(_ tableView: UITableView, numberOfRowsInSection), то нужно, т.к. он не поймет сколько ячеек создавать.
-        // !Сначала вызывается tableView(_:numberOfRowsInSection:) Значит нам сразу нужно как-то наполнить массив photos данными.
-        // На момент вызова массив с фото пуст
     }
     
     func updateTableViewAnimated() {
-        // Тут проблема. Он добавляет строк столько, сколько есть разницы между локальным массивом и массивом Service. Т.е. они не должны быть равны, чтобы все работало.
+        // Тут мы добавили проверку массива фотографий на разницу и присвоили локальному массиву массив из сервиса.
         let oldPhotosCount = photos.count
         let newPhotosCount = imagesListService.photos.count
         print("Количество строк локального массива \(oldPhotosCount)")
@@ -68,6 +61,42 @@ final class ImagesListViewController: UIViewController {
         
     }
     
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+       guard let indexPath = tableView.indexPath(for: cell) else { return }
+       let photo = photos[indexPath.row]
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoId: photo.id) { result in
+            switch result {
+            case .success:
+            
+                self.photos = self.imagesListService.photos
+                cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                UIBlockingProgressHUD.dismiss()
+            case .failure:
+                UIBlockingProgressHUD.dismiss()
+                self.showLikeErrorAlert()
+            }
+            
+        }
+        
+
+    }
+    
+    func showLikeErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так(" ,
+            message: "Не удалось поставить лайк",
+            preferredStyle: .alert)
+        
+        let alertAction = UIAlertAction(
+            title: "OK",
+            style: .default)
+        alertController.addAction(alertAction)
+        present(alertController, animated: true, completion: nil)
+        
+    }
+    
+    
 //    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 //        if segue.identifier == showSingleImageSegueIdentifier {
 //            guard
@@ -86,7 +115,6 @@ final class ImagesListViewController: UIViewController {
 //    }
     
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        // Этап 2 подготовка ячейки
         let photo = photos[indexPath.row]
         let photoUrl = URL(string: photo.thumbImageURL)
         
@@ -96,31 +124,30 @@ final class ImagesListViewController: UIViewController {
             placeholder: UIImage(named: "placeholder")) { _ in
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
+        // Из-за этой штуки при листании вверх пропадают фотографии
         
         cell.dateLabel.text = dateFormatter.string(from: currentDate)
         
-        let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+//        let isLiked = indexPath.row % 2 == 0
+        let likeImage = photo.isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
     
 }
 
 extension ImagesListViewController: UITableViewDataSource {
-    // Этап 1 - подготовка таблицы (До этого должен быть запрос в сеть)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-        
         guard let imageListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
-        
+        imageListCell.delegate = self
+
         configCell(for: imageListCell, with: indexPath)
-        
         return imageListCell
     }
 }
@@ -134,7 +161,6 @@ extension ImagesListViewController: UITableViewDelegate {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        // Я не уверен что тут правильно выбраны размеры
         let imageSizeWidth = photos[indexPath.row].size.width
         let imageSizeHeight = photos[indexPath.row].size.height
         
@@ -144,8 +170,6 @@ extension ImagesListViewController: UITableViewDelegate {
         let cellHeight = imageSizeHeight * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
     }
-    // Этот метод будет запускать сетевой запрос новой партии фотографий при каждом появлении на экране новой ячейки.
-    // Но только при условии что количество строк совпадает с количеством фотографий.
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row + 1 == photos.count {
             imagesListService.fetchPhotosNextPage()

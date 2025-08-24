@@ -28,3 +28,5 @@ enum ImageListUrl {
     // Поработать с именами
     static let unsplashFetchRequestMakeImageList = "https://api.unsplash.com/photos"
 }
+
+
