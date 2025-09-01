@@ -123,7 +123,7 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc func didTapLogoutButton() {
-        
+        ProfileLogoutService.shared.logout()
     }
     
 }

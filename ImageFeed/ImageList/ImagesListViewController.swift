@@ -41,7 +41,6 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
     }
     
     func updateTableViewAnimated() {
-        // Тут мы добавили проверку массива фотографий на разницу и присвоили локальному массиву массив из сервиса.
         let oldPhotosCount = photos.count
         let newPhotosCount = imagesListService.photos.count
         print("Количество строк локального массива \(oldPhotosCount)")
@@ -97,22 +96,21 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
     }
     
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == showSingleImageSegueIdentifier {
-//            guard
-//                let viewController = segue.destination as? SingleImageViewController,
-//                let indexPath = sender as? IndexPath
-//            else {
-//                assertionFailure("Invalid segue destination")
-//                return
-//            }
-//            
-//            let image = UIImage(named: photosName[indexPath.row])
-//            viewController.image = image
-//        } else {
-//            super.prepare(for: segue, sender: sender)
-//        }
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showSingleImageSegueIdentifier {
+            guard
+                let viewController = segue.destination as? SingleImageViewController,
+                let indexPath = sender as? IndexPath
+            else {
+                assertionFailure("Invalid segue destination")
+                return
+            }
+            let imageUrlPath = photos[indexPath.row].largeImageURL
+            viewController.fullImageUrl = imageUrlPath
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
+    }
     
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
@@ -124,11 +122,8 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
             placeholder: UIImage(named: "placeholder")) { _ in
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
-        // Из-за этой штуки при листании вверх пропадают фотографии
         
         cell.dateLabel.text = dateFormatter.string(from: currentDate)
-        
-//        let isLiked = indexPath.row % 2 == 0
         let likeImage = photo.isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
