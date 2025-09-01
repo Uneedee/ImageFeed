@@ -116,14 +116,21 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
         let photo = photos[indexPath.row]
         let photoUrl = URL(string: photo.thumbImageURL)
         
+        cell.addGradientToImage()
+        
         cell.cellImage.kf.indicatorType = .activity
         cell.cellImage.kf.setImage(
             with: photoUrl,
             placeholder: UIImage(named: "placeholder")) { _ in
+                cell.removeGradient()
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         
-        cell.dateLabel.text = dateFormatter.string(from: currentDate)
+        if let createdAt = photo.createdAt {
+            cell.dateLabel.text = dateFormatter.string(from: createdAt)
+        } else {
+            cell.dateLabel.text = ""
+        }
         let likeImage = photo.isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
@@ -166,6 +173,7 @@ extension ImagesListViewController: UITableViewDelegate {
         return cellHeight
     }
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+
         if indexPath.row + 1 == photos.count {
             imagesListService.fetchPhotosNextPage()
         }

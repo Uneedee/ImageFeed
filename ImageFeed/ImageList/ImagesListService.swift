@@ -136,9 +136,6 @@ final class ImagesListService {
         return formatter.date(from: dateString)
     }
     
-    // Имеем массив фотографий. Когда ставим лайк, то отправляем сетевой запрос, в котором берем 2 параметра из этой структуры. id, isLike.
-    //
-    
     func changeLike(photoId: String, _ completion: @escaping (Result<Void, Error>) -> Void)  {
         
         var request: URLRequest?
