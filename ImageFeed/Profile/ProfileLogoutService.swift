@@ -1,5 +1,4 @@
 import Foundation
-// Обязательный импорт
 import WebKit
 
 final class ProfileLogoutService {
@@ -9,7 +8,11 @@ final class ProfileLogoutService {
 
    func logout() {
       cleanCookies()
+       ProfileService.shared.clearData()
+       ProfileImageService.shared.clearData()
+       ImagesListService.shared.clearData()
        OAuth2TokenStorage.shared.tokenKey = nil
+
        
        DispatchQueue.main.async {
            self.resetToAuthScreen()
@@ -26,11 +29,8 @@ final class ProfileLogoutService {
     }
 
    private func cleanCookies() {
-      // Очищаем все куки из хранилища
       HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
-      // Запрашиваем все данные из локального хранилища
       WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-         // Массив полученных записей удаляем из хранилища
          records.forEach { record in
             WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
          }

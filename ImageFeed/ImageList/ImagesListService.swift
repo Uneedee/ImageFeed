@@ -76,6 +76,13 @@ final class ImagesListService {
     
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
+    func clearData() {
+        photos.removeAll()
+        task?.cancel()
+        task = nil
+        lastLoadedPage = nil
+    }
+    
     func makeImageListRequest(page: Int, perPage: Int, token: String) -> URLRequest? {
         
 

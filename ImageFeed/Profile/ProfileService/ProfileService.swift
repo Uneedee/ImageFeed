@@ -65,4 +65,11 @@ final class ProfileService {
         self.task = task
         task.resume()
     }
+    
+    func clearData() {
+        task?.cancel()
+        task = nil
+        profile = nil
+        
+    }
 }

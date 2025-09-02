@@ -3,6 +3,8 @@ import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
+
+    
     weak var delegate: ImagesListCellDelegate?
     
     static let reuseIdentifier = "ImagesListCell"
@@ -25,6 +27,8 @@ final class ImagesListCell: UITableViewCell {
         let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         likeButton.setImage(likeImage, for: .normal)
     }
+    
+    
     
     func addGradientToImage() {
         gradientLayer?.removeFromSuperlayer()
@@ -62,7 +66,6 @@ final class ImagesListCell: UITableViewCell {
         gradientLayer = nil
     }
 
-    
 }
 
 protocol ImagesListCellDelegate: AnyObject {

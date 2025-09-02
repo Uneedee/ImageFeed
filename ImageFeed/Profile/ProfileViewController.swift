@@ -8,7 +8,7 @@ final class ProfileViewController: UIViewController {
     private var loginNameLabel: UILabel!
     private var descriptionLabel: UILabel!
     private var logoutButton: UIButton!
-    var animationLayers = Set<CALayer>()
+    private var animationLayers = Set<CALayer>()
     private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
@@ -32,9 +32,10 @@ final class ProfileViewController: UIViewController {
             }
         updateAvatar()
         addGradientToProfileImage()
-        addGradientToNameLabel()
-        addGradientToLoginNameLabel()
-        addGradientToDescriptionLabel()
+        addGradientToAllLabels(labelName: nameLabel, size: CGSize(width: 223, height: 18))
+        addGradientToAllLabels(labelName: loginNameLabel, size: CGSize(width: 89, height: 18))
+        addGradientToAllLabels(labelName: descriptionLabel, size: CGSize(width: 67, height: 18))
+        
         
     }
     
@@ -68,39 +69,17 @@ final class ProfileViewController: UIViewController {
         
     }
     
-    private func addGradientToDescriptionLabel() {
-        let gradient = CAGradientLayer()
-        
-        gradient.frame = CGRect(origin: .zero, size: CGSize(width: 67, height: 18))
-        gradient.locations = [0, 0.1, 0.3]
-        gradient.colors = [
-            UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor,
-            UIColor(red: 0.531, green: 0.533, blue: 0.553, alpha: 1).cgColor,
-            UIColor(red: 0.431, green: 0.433, blue: 0.453, alpha: 1).cgColor
-        ]
-        gradient.startPoint = CGPoint(x: 0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 1, y: 0.5)
-        gradient.cornerRadius = 9
-        gradient.masksToBounds = true
-        animationLayers.insert(gradient)
-        descriptionLabel.layer.addSublayer(gradient)
-        
-        let gradientChangeAnimation = CABasicAnimation(keyPath: "locations")
-        gradientChangeAnimation.duration = 1.0
-        gradientChangeAnimation.repeatCount = .infinity
-        gradientChangeAnimation.fromValue = [0, 0.1, 0.3]
-        gradientChangeAnimation.toValue = [0, 0.8, 1]
-        gradientChangeAnimation.fillMode = .forwards
-        gradientChangeAnimation.isRemovedOnCompletion = false
-        gradient.add(gradientChangeAnimation, forKey: "addGradientToDescriptionLabel")
-        
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        removeGradientAnimation()
     }
     
-    
-    private func addGradientToLoginNameLabel() {
+    private func addGradientToAllLabels(labelName: UILabel, size: CGSize) {
         let gradient = CAGradientLayer()
         
-        gradient.frame = CGRect(origin: .zero, size: CGSize(width: 89, height: 18))
+        gradient.frame = CGRect(origin: .zero, size: CGSize(width: size.width, height: size.height))
         gradient.locations = [0, 0.1, 0.3]
         gradient.colors = [
             UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor,
@@ -112,7 +91,7 @@ final class ProfileViewController: UIViewController {
         gradient.cornerRadius = 9
         gradient.masksToBounds = true
         animationLayers.insert(gradient)
-        loginNameLabel.layer.addSublayer(gradient)
+        labelName.layer.addSublayer(gradient)
         
         let gradientChangeAnimation = CABasicAnimation(keyPath: "locations")
         gradientChangeAnimation.duration = 1.0
@@ -121,35 +100,7 @@ final class ProfileViewController: UIViewController {
         gradientChangeAnimation.toValue = [0, 0.8, 1]
         gradientChangeAnimation.fillMode = .forwards
         gradientChangeAnimation.isRemovedOnCompletion = false
-        gradient.add(gradientChangeAnimation, forKey: "addGradientToLoginNameLabel")
-        
-    }
-    
-    private func addGradientToNameLabel() {
-        let gradient = CAGradientLayer()
-        
-        gradient.frame = CGRect(origin: .zero, size: CGSize(width: 223, height: 18))
-        gradient.locations = [0, 0.1, 0.3]
-        gradient.colors = [
-            UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor,
-            UIColor(red: 0.531, green: 0.533, blue: 0.553, alpha: 1).cgColor,
-            UIColor(red: 0.431, green: 0.433, blue: 0.453, alpha: 1).cgColor
-        ]
-        gradient.startPoint = CGPoint(x: 0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 1, y: 0.5)
-        gradient.cornerRadius = 9
-        gradient.masksToBounds = true
-        animationLayers.insert(gradient)
-        nameLabel.layer.addSublayer(gradient)
-        
-        let gradientChangeAnimation = CABasicAnimation(keyPath: "locations")
-        gradientChangeAnimation.duration = 1.0
-        gradientChangeAnimation.repeatCount = .infinity
-        gradientChangeAnimation.fromValue = [0, 0.1, 0.3]
-        gradientChangeAnimation.toValue = [0, 0.8, 1]
-        gradientChangeAnimation.fillMode = .forwards
-        gradientChangeAnimation.isRemovedOnCompletion = false
-        gradient.add(gradientChangeAnimation, forKey: "addGradientToNameLabel")
+        gradient.add(gradientChangeAnimation, forKey: "addGradientToAllLabels")
         
     }
     
@@ -183,7 +134,7 @@ final class ProfileViewController: UIViewController {
     
     private func removeGradientAnimation() {
         for layer in animationLayers {
-            layer.removeFromSuperlayer() // ← Встроенный метод!
+            layer.removeFromSuperlayer()
         }
         animationLayers.removeAll()
     }
@@ -204,7 +155,7 @@ final class ProfileViewController: UIViewController {
     
     private func setupNameLabel() {
         nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = ""
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         nameLabel.font = .boldSystemFont(ofSize: 23)
@@ -216,7 +167,7 @@ final class ProfileViewController: UIViewController {
     
     private func setupLoginNameLabel() {
         loginNameLabel = UILabel()
-        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.text = ""
         loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loginNameLabel)
         loginNameLabel.font = .systemFont(ofSize: 13)
@@ -226,7 +177,7 @@ final class ProfileViewController: UIViewController {
     }
     private func setupDescriptionLabel() {
         descriptionLabel = UILabel()
-        descriptionLabel.text = "Hello, world!"
+        descriptionLabel.text = ""
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(descriptionLabel)
         descriptionLabel.textColor = .ypWhite
@@ -271,7 +222,13 @@ final class ProfileViewController: UIViewController {
 
     }
     
-    
+    func clearData() {
+        avatarImageView.image = nil
+        nameLabel.text = ""
+        loginNameLabel.text = ""
+        descriptionLabel.text = ""
+        animationLayers.removeAll()
+    }
     
 }
 

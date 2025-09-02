@@ -81,6 +81,8 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
 
     }
     
+
+    
     func showLikeErrorAlert() {
         let alertController = UIAlertController(
             title: "Что-то пошло не так(" ,
@@ -95,6 +97,11 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
         
     }
     
+    deinit {
+        if let observer = imageListServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
@@ -123,7 +130,7 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
             with: photoUrl,
             placeholder: UIImage(named: "placeholder")) { _ in
                 cell.removeGradient()
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                
             }
         
         if let createdAt = photo.createdAt {
