@@ -5,9 +5,7 @@ final class SplashViewController: UIViewController {
     private let profileService = ProfileService.shared
     private let storage = OAuth2TokenStorage.shared.self
     
-    deinit {
-        print("⚠️ SplashViewController DEALLOCATED")
-    }
+
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

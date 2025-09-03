@@ -7,6 +7,13 @@ final class OAuth2Service {
     static let shared = OAuth2Service()
     private init() {}
     
+    
+    func clearData() {
+        task?.cancel()
+        task = nil
+        lastCode = nil
+    }
+    
     func fetchOAuthToken(code: String, completion: @escaping(Result<String, Error>) -> Void ) {
         assert(Thread.isMainThread)
         if task != nil {

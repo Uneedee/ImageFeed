@@ -47,6 +47,9 @@
                                                     </constraints>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                     <state key="normal" image="like_button_on"/>
+                                                    <connections>
+                                                        <action selector="likeButtonClicked" destination="7k4-nR-3Sq" eventType="touchUpInside" id="JMF-3w-WLw"/>
+                                                    </connections>
                                                 </button>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Rectangle 168" translatesAutoresizingMaskIntoConstraints="NO" id="8Uw-ud-LLh" userLabel="Gradient">
                                                     <rect key="frame" x="16" y="238" width="361" height="30"/>
@@ -81,7 +84,7 @@
                                         <connections>
                                             <outlet property="cellImage" destination="F1c-yW-Qzl" id="jME-nO-pMO"/>
                                             <outlet property="dateLabel" destination="0b9-VR-VMd" id="7o9-5K-F3c"/>
-                                            <outlet property="likeButton" destination="wUf-kP-uRo" id="qOI-Gg-lr1"/>
+                                            <outlet property="likeButton" destination="wUf-kP-uRo" id="SA5-gg-jfV"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

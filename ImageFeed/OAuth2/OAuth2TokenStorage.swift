@@ -14,5 +14,9 @@ final class OAuth2TokenStorage {
         }
         }
     }
+    
+    func clearData() {
+        tokenKey = nil
+    }
     private init() {}
 }

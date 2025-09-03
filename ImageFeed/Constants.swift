@@ -23,3 +23,10 @@ enum ProfileImageConstants {
 enum ProfileConstants {
     static let unsplashFetchProfileURLString = "https://api.unsplash.com/me"
 }
+
+enum ImageListUrl {
+    // Поработать с именами
+    static let unsplashFetchRequestMakeImageList = "https://api.unsplash.com/photos"
+}
+
+
