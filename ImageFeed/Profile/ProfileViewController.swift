@@ -1,6 +1,11 @@
 import UIKit
 import Kingfisher
 
+protocol ProfileViewControllerProtocol {
+    var presenter: ProfileViewPresenterProtocol? { get set }
+    
+}
+
 final class ProfileViewController: UIViewController {
     
     private var avatarImageView: UIImageView!
@@ -10,6 +15,7 @@ final class ProfileViewController: UIViewController {
     private var logoutButton: UIButton!
     private var animationLayers = Set<CALayer>()
     private var profileImageServiceObserver: NSObjectProtocol?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +44,7 @@ final class ProfileViewController: UIViewController {
         
         
     }
+    
     
     private func updateAvatar() {
         guard
