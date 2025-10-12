@@ -1,13 +1,15 @@
 import UIKit
 import Kingfisher
 
-protocol ProfileViewControllerProtocol {
-    var presenter: ProfileViewPresenterProtocol? { get set }
+protocol ProfileControllerProtocol: AnyObject {
+    func showProfile(_ profile: Profile)
+    func showAvatar(with url: URL)
+    func showLogoutAlert()
     
 }
 
 final class ProfileViewController: UIViewController {
-    
+
     private var avatarImageView: UIImageView!
     private var nameLabel: UILabel!
     private var loginNameLabel: UILabel!
@@ -15,6 +17,7 @@ final class ProfileViewController: UIViewController {
     private var logoutButton: UIButton!
     private var animationLayers = Set<CALayer>()
     private var profileImageServiceObserver: NSObjectProtocol?
+    
     
     
     override func viewDidLoad() {
