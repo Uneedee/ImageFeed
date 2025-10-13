@@ -53,16 +53,19 @@ final class ProfileImageService {
             return
         }
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
+            print("📡 Получен ответ от сервера")
             switch result {
             case .success(let data):
                 guard let self = self else { return }
                 self.avatarURL = data.profileImage.large
                 completion(.success(data.profileImage.large))
+                print("📡 ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ: \(data.profileImage.large)")
                 NotificationCenter.default
                     .post(
                         name: ProfileImageService.didChangeNotification,
                         object: self,
                         userInfo: ["URL": data.profileImage.large ])
+                print("📡 УВЕДОМЛЕНИЕ ОТПРАВЛЕНО")
             case .failure(let error):
                 completion(.failure(error))
                 print(error)

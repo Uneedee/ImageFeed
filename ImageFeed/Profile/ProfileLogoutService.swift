@@ -17,7 +17,6 @@ final class ProfileLogoutService {
        DispatchQueue.main.async {
            self.resetToAuthScreen()
        }
-       
    }
     
     private func resetToAuthScreen() {

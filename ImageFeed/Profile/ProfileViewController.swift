@@ -1,14 +1,19 @@
 import UIKit
 import Kingfisher
 
-protocol ProfileControllerProtocol: AnyObject {
-    func showProfile(_ profile: Profile)
-    func showAvatar(with url: URL)
+protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfileViewPresenterProtocol? { get set }
+
     func showLogoutAlert()
-    
+    func updateProfileDetails(with profile: Profile)
+    func updateAvatar(url: URL)
 }
 
-final class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    
+    var presenter: ProfileViewPresenterProtocol?
+    
+
 
     private var avatarImageView: UIImageView!
     private var nameLabel: UILabel!
@@ -22,24 +27,23 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main)
+        { [weak self] _ in
+            guard let self = self else { return }
+            self.presenter?.viewDidLoad()
+        }
         setupAvatarImageView()
         setupNameLabel()
         setupLoginNameLabel()
         setupDescriptionLabel()
         setupLogoutButton()
         view.backgroundColor = .ypBlack
-        guard let profile = ProfileService.shared.profile else { return }
-        updateProfileDetails(with: profile)
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
+
+ 
         addGradientToProfileImage()
         addGradientToAllLabels(labelName: nameLabel, size: CGSize(width: 223, height: 18))
         addGradientToAllLabels(labelName: loginNameLabel, size: CGSize(width: 89, height: 18))
@@ -48,14 +52,13 @@ final class ProfileViewController: UIViewController {
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        presenter?.viewDidLoad()
+    }
+
     
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-                
-                
-        else { return }
+    func updateAvatar(url: URL) {
         let processor = RoundCornerImageProcessor(cornerRadius: 35)
         
         
@@ -63,15 +66,15 @@ final class ProfileViewController: UIViewController {
         avatarImageView.kf.setImage(with: url,
                                     placeholder: UIImage(named: "tab_profile_noactive"),
                                     options: [.processor(processor),
-                                              .scaleFactor(UIScreen.main.scale)])
-        DispatchQueue.main.async {
-            self.removeGradientAnimation()
-        }
-        
-        
+                                              .scaleFactor(UIScreen.main.scale)]) { result in
+                                                  DispatchQueue.main.async {
+                                                      self.removeGradientAnimation()
+                                                  }
+                                              }
+
     }
     
-    private func updateProfileDetails(with profile: Profile) {
+     func updateProfileDetails(with profile: Profile) {
         nameLabel.text = profile.name.isEmpty ? "Имя не задано" : profile.name
         loginNameLabel.text = profile.loginName.isEmpty ? "Логин не задан" : profile.loginName
         descriptionLabel.text = profile.bio?.isEmpty == false ? profile.bio : ""
@@ -199,8 +202,8 @@ final class ProfileViewController: UIViewController {
         guard let buttonImage = UIImage(named: "ExitButton") else { return }
         logoutButton = UIButton.systemButton(
             with: buttonImage,
-            target: self,
-            action: #selector(self.didTapLogoutButton))
+            target: presenter,
+            action: #selector(ProfileViewPresenter.didTapLogoutButton))
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoutButton)
         logoutButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
@@ -210,7 +213,7 @@ final class ProfileViewController: UIViewController {
         logoutButton.tintColor = .ypRed
     }
     
-    @objc func didTapLogoutButton() {
+    func showLogoutAlert() {
         let alertController = UIAlertController(
             title: "Пока, пока!" ,
             message: "Уверены что хотите выйти?",
@@ -229,7 +232,6 @@ final class ProfileViewController: UIViewController {
         alertController.addAction(alertActionYes)
         alertController.addAction(alertActionNo)
         present(alertController, animated: true, completion: nil)
-
     }
     
     func clearData() {
