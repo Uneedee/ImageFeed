@@ -12,44 +12,19 @@ protocol ProfileViewControllerProtocol: AnyObject {
 final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     
     var presenter: ProfileViewPresenterProtocol?
-    
-
-
     private var avatarImageView: UIImageView!
     private var nameLabel: UILabel!
     private var loginNameLabel: UILabel!
     private var descriptionLabel: UILabel!
     private var logoutButton: UIButton!
     private var animationLayers = Set<CALayer>()
-    private var profileImageServiceObserver: NSObjectProtocol?
+
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main)
-        { [weak self] _ in
-            guard let self = self else { return }
-            self.presenter?.viewDidLoad()
-        }
-        setupAvatarImageView()
-        setupNameLabel()
-        setupLoginNameLabel()
-        setupDescriptionLabel()
-        setupLogoutButton()
-        view.backgroundColor = .ypBlack
-
- 
-        addGradientToProfileImage()
-        addGradientToAllLabels(labelName: nameLabel, size: CGSize(width: 223, height: 18))
-        addGradientToAllLabels(labelName: loginNameLabel, size: CGSize(width: 89, height: 18))
-        addGradientToAllLabels(labelName: descriptionLabel, size: CGSize(width: 67, height: 18))
-        
-        
+        setupUI()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -57,6 +32,18 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         presenter?.viewDidLoad()
     }
 
+    func setupUI() {
+        setupAvatarImageView()
+        setupNameLabel()
+        setupLoginNameLabel()
+        setupDescriptionLabel()
+        setupLogoutButton()
+        view.backgroundColor = .ypBlack
+        addGradientToProfileImage()
+        addGradientToAllLabels(labelName: nameLabel, size: CGSize(width: 223, height: 18))
+        addGradientToAllLabels(labelName: loginNameLabel, size: CGSize(width: 89, height: 18))
+        addGradientToAllLabels(labelName: descriptionLabel, size: CGSize(width: 67, height: 18))
+    }
     
     func updateAvatar(url: URL) {
         let processor = RoundCornerImageProcessor(cornerRadius: 35)
@@ -82,12 +69,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         
     }
     
-    deinit {
-        if let observer = profileImageServiceObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
-        removeGradientAnimation()
-    }
+
     
     private func addGradientToAllLabels(labelName: UILabel, size: CGSize) {
         let gradient = CAGradientLayer()
