@@ -1,6 +1,10 @@
 import UIKit
 import Kingfisher
 
+protocol ImagesListViewControllerProtocol: AnyObject {
+    
+}
+
 final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
     
 
