@@ -31,6 +31,11 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         super.viewDidAppear(animated)
         presenter?.viewDidLoad()
     }
+    
+    func configure(_ presenter: ProfileViewPresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
+    }
 
     func setupUI() {
         setupAvatarImageView()
@@ -193,6 +198,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
         logoutButton.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor).isActive = true
         logoutButton.tintColor = .ypRed
+        logoutButton.accessibilityIdentifier = "logout button"
     }
     
     func showLogoutAlert() {

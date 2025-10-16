@@ -7,7 +7,60 @@
 		<key>ImageFeed.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>ImageFeedUITests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>ImageFeedUITestsNew.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>Image_Feed_UI_Tests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>241C25892DD9C27800F252D7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>241C259F2DD9C27A00F252D7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>241C25A92DD9C27A00F252D7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>24A059902E95938300EA4F0D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>24E3D3172EA0568600EAB007</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>24F378152E453694008CB71C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>24F67D042EA00C7100A4DEA3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

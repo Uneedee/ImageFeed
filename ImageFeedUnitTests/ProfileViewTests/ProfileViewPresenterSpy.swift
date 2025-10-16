@@ -1,7 +1,17 @@
-//
-//  ProfileViewPresenterSpy.swift
-//  ImageFeed
-//
-//  Created by Alexey Ratushnyak on 09.10.2025.
-//
+@testable import ImageFeed
+import UIKit
+
+final class ProfileViewPresenterSpy: ProfileViewPresenterProtocol {
+    var view: ProfileViewControllerProtocol?
+    var viewDidLoadCalled = false
+    var didTapLogoutCalled = false
+
+    func viewDidLoad() {
+        viewDidLoadCalled = true
+    }
+
+    func didTapLogoutButton() {
+        didTapLogoutCalled = true
+    }
+}
 

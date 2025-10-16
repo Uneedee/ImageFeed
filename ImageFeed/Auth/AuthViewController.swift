@@ -18,6 +18,10 @@ final class AuthViewController: UIViewController {
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        print("✅ AuthViewController появился на экране")
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebViewSegueIdentifier {
             guard

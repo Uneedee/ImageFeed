@@ -24,10 +24,18 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter = ImageListViewPresenter()
-        presenter?.view = self
+        if presenter == nil {
+            presenter = ImageListViewPresenter()
+            presenter?.view = self
+            presenter?.configureService(ImagesListService.shared)
+        }
         presenter?.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+    
+    func configure(_ presenter: ImageListViewPresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
     }
     
     func reloadRow(at indexPath: IndexPath) {
@@ -41,12 +49,13 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate, 
         }
     }
     
-    
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
        guard let indexPath = tableView.indexPath(for: cell) else { return }
         presenter?.didTapLike(at: indexPath)
 }
-    
+    func simulateUserDidTapLike(at indexPath: IndexPath) {
+        presenter?.didTapLike(at: indexPath)
+    }
 
     func showLikeErrorAlert() {
         let alertController = UIAlertController(

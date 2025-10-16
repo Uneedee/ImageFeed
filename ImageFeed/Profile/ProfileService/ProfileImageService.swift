@@ -21,7 +21,13 @@ struct UserResult: Codable {
     }
 }
 
-final class ProfileImageService {
+protocol ProfileImageServiceProtocol: AnyObject {
+    var avatarURL: String? { get }
+    static var didChangeNotification: Notification.Name { get }
+    func clearData()
+}
+
+final class ProfileImageService: ProfileImageServiceProtocol {
     private var task: URLSessionTask?
     private(set) var avatarURL: String?
     static let shared = ProfileImageService()

@@ -12,6 +12,19 @@ final class ProfileViewPresenter: NSObject, ProfileViewPresenterProtocol {
 
     weak var view: ProfileViewControllerProtocol?
     private var profileImageServiceObserver: NSObjectProtocol?
+    
+    private let profileService: ProfileServiceProtocol
+     private let imageService: ProfileImageServiceProtocol
+
+     init(
+         view: ProfileViewControllerProtocol? = nil,
+         profileService: ProfileServiceProtocol = ProfileService.shared,
+         imageService: ProfileImageServiceProtocol = ProfileImageService.shared
+     ) {
+         self.view = view
+         self.profileService = profileService
+         self.imageService = imageService
+     }
 
     
     func viewDidLoad() {
@@ -32,8 +45,8 @@ final class ProfileViewPresenter: NSObject, ProfileViewPresenterProtocol {
         }}
     
     func updateProfile() {
-        guard let profile = ProfileService.shared.profile,
-              let avatarUrlString = ProfileImageService.shared.avatarURL,
+        guard let profile = profileService.profile,
+              let avatarUrlString = imageService.avatarURL,
               let avatarURL = URL(string: avatarUrlString) else { return }
         view?.updateProfileDetails(with: profile)
         view?.updateAvatar(url: avatarURL)

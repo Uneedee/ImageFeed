@@ -21,7 +21,12 @@ struct ProfileResult: Codable {
     }
 }
 
-final class ProfileService {
+protocol ProfileServiceProtocol: AnyObject {
+    var profile: Profile? { get }
+    func clearData()
+}
+
+final class ProfileService: ProfileServiceProtocol {
     private var task: URLSessionTask?
     private let urlSession = URLSession.shared
     static let shared = ProfileService()
