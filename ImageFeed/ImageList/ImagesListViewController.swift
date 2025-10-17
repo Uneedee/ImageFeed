@@ -1,6 +1,8 @@
 import UIKit
 import Kingfisher
 
+// MARK: - Protocol
+
 protocol ImagesListViewControllerProtocol: AnyObject {
     var presenter: ImageListViewPresenterProtocol? { get set }
     func insertRows(indexPath: [IndexPath])
@@ -8,9 +10,17 @@ protocol ImagesListViewControllerProtocol: AnyObject {
     func showLikeErrorAlert()
 }
 
-final class ImagesListViewController: UIViewController, ImagesListCellDelegate, ImagesListViewControllerProtocol {
+// MARK: - ImagesListViewController
+
+final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
+    
+    // MARK: - Outlets
 
     @IBOutlet private var tableView: UITableView!
+    
+    // MARK: - Properties
+    // Тут если сделать ссылку слабой, то презентер сразу удаляется из памяти.
+    
     var presenter: ImageListViewPresenterProtocol?
     private let currentDate = Date()
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
@@ -22,16 +32,29 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate, 
         return formatter
     }()
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        if presenter == nil {
+        setupView()
+        setupPresenter()
+        presenter?.viewDidLoad()
+    }
+    
+    // MARK: - Setup
+    
+    private func setupView() {
+        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+    
+    func setupPresenter() {
+        guard presenter == nil else { return }
             presenter = ImageListViewPresenter()
             presenter?.view = self
             presenter?.configureService(ImagesListService.shared)
-        }
-        presenter?.viewDidLoad()
-        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
+    
+    // MARK: - Configuration
     
     func configure(_ presenter: ImageListViewPresenterProtocol) {
         self.presenter = presenter
@@ -45,17 +68,9 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate, 
     func insertRows(indexPath: [IndexPath]) {
         tableView.performBatchUpdates {
             tableView.insertRows(at: indexPath, with: .automatic)
-        } completion: { _ in
         }
     }
-    
-    func imageListCellDidTapLike(_ cell: ImagesListCell) {
-       guard let indexPath = tableView.indexPath(for: cell) else { return }
-        presenter?.didTapLike(at: indexPath)
-}
-    func simulateUserDidTapLike(at indexPath: IndexPath) {
-        presenter?.didTapLike(at: indexPath)
-    }
+
 
     func showLikeErrorAlert() {
         let alertController = UIAlertController(
@@ -71,7 +86,7 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate, 
         
     }
     
-
+    // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
@@ -88,6 +103,8 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate, 
             super.prepare(for: segue, sender: sender)
         }
     }
+    
+    // MARK: - Helpers
     
     func configCell(for cell: ImagesListCell, photo: Photo) {
         let photoUrl = URL(string: photo.thumbImageURL)
@@ -113,6 +130,8 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate, 
     
 }
 
+// MARK: - UITableViewDataSource
+
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         presenter?.photos.count ?? 0
@@ -132,9 +151,7 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
-
-
-
+// MARK: - UITableViewDelegate
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -154,6 +171,18 @@ extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         presenter?.willDisplayCell(at: indexPath)
     }
+}
+
+extension ImagesListViewController: ImagesListCellDelegate {
+
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+       guard let indexPath = tableView.indexPath(for: cell) else { return }
+        presenter?.didTapLike(at: indexPath)
+}
+    func simulateUserDidTapLike(at indexPath: IndexPath) {
+        presenter?.didTapLike(at: indexPath)
+    }
+    
 }
 
 

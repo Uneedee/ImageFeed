@@ -75,11 +75,6 @@ final class Image_FeedUITests: XCTestCase {
                 let firstCell = tablesQuery.cells.element(boundBy: 0)
                 XCTAssertTrue(firstCell.waitForExistence(timeout: 10), "Не загрузилась лента после логина")
         
-
-        
-        
-        
-        
     }
     
     

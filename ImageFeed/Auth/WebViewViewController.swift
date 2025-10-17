@@ -17,8 +17,8 @@ protocol WebViewViewControllerDelegate: AnyObject {
 final class WebViewViewController: UIViewController & WebViewViewControllerProtocol {
     var presenter: WebViewPresenterProtocol?
     
-    @IBOutlet var progressView: UIProgressView!
-    @IBOutlet private var webView: WKWebView!
+    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet private weak var webView: WKWebView!
     private var estimatedProgressObservation: NSKeyValueObservation?
     
     weak var delegate: WebViewViewControllerDelegate?

@@ -31,7 +31,6 @@ final class ImageListViewPresenter: ImageListViewPresenterProtocol {
         guard let imagesListService = imagesListService else { return }
         if indexPath.row + 1 == photos.count {
             self.imagesListService?.fetchPhotosNextPage()
-//            self.imagesListService = ImagesListService()
         }
     }
     
