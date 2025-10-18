@@ -1,5 +1,6 @@
 @testable import ImageFeed
 import XCTest
+import UIKit
 
 final class ImagesListServiceTests: XCTestCase {
     func testFetchPhotos() {
@@ -13,7 +14,7 @@ final class ImagesListServiceTests: XCTestCase {
                 expectation.fulfill()
             }
         
-        service.fetchPhotosNextPage { _ in }
+        service.fetchPhotosNextPage()
         wait(for: [expectation], timeout: 10)
         
         XCTAssertEqual(service.photos.count, 10)

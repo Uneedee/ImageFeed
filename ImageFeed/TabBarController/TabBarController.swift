@@ -1,7 +1,5 @@
 import UIKit
 
-import UIKit
-
 final class TabBarController: UITabBarController {
     
     override func awakeFromNib() {
@@ -13,6 +11,12 @@ final class TabBarController: UITabBarController {
         )
         
         let profileViewController = ProfileViewController()
+        let profileViewPresenter = ProfileViewPresenter()
+        
+        
+        profileViewPresenter.view = profileViewController
+        profileViewController.presenter = profileViewPresenter
+        
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_profile_active"),

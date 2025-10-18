@@ -55,7 +55,11 @@ final class SplashViewController: UIViewController {
         }
         authViewController.delegate = self
         authViewController.modalPresentationStyle = .fullScreen
-        present(authViewController, animated: true)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            self.present(authViewController, animated: true)
+        })
+//        present(authViewController, animated: true)
     }
 }
 

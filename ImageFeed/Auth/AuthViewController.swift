@@ -18,6 +18,10 @@ final class AuthViewController: UIViewController {
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        print("✅ AuthViewController появился на экране")
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebViewSegueIdentifier {
             guard
@@ -26,7 +30,11 @@ final class AuthViewController: UIViewController {
                 assertionFailure("Failed to prepare for \(showWebViewSegueIdentifier)")
                 return
             }
-            webViewViewController.delegate = self
+            let authHelper = AuthHelper()
+            let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+              webViewViewController.presenter = webViewPresenter
+              webViewPresenter.view = webViewViewController
+              webViewViewController.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
         }

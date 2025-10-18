@@ -10,7 +10,7 @@ struct Profile{
 struct ProfileResult: Codable {
     let username: String
     let firstname: String
-    let lastname: String
+    let lastname: String?
     let bio: String?
     
     private enum CodingKeys: String, CodingKey {
@@ -21,7 +21,12 @@ struct ProfileResult: Codable {
     }
 }
 
-final class ProfileService {
+protocol ProfileServiceProtocol: AnyObject {
+    var profile: Profile? { get }
+    func clearData()
+}
+
+final class ProfileService: ProfileServiceProtocol {
     private var task: URLSessionTask?
     private let urlSession = URLSession.shared
     static let shared = ProfileService()
@@ -49,8 +54,9 @@ final class ProfileService {
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result:Result<ProfileResult, Error>) in
             switch result {
             case .success(let data):
+                guard let lastname = data.lastname else { return }
                 let profile = Profile(username: data.username,
-                                      name: "\(data.firstname) \(data.lastname)",
+                                      name: "\(data.firstname) \(lastname)",
                                       loginName: "@\(data.username)",
                                       bio: data.bio)
                 self?.profile = profile

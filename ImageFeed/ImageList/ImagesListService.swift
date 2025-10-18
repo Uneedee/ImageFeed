@@ -67,7 +67,13 @@ struct Photo {
     var isLiked: Bool
 }
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol: AnyObject {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, _ completion: @escaping (Result<Void, Error>) -> Void)
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     private(set) var photos: [Photo] = []
     private var task: URLSessionTask?
     static let shared = ImagesListService()
@@ -197,6 +203,7 @@ final class ImagesListService {
         return request
         
     }
+    
     
     
     func makePhotosDislikeRequest(id: String) -> URLRequest? {

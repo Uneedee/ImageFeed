@@ -154,6 +154,7 @@
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="obV-Dg-txt">
                                 <rect key="frame" x="8" y="67" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="nav back button white"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="NMy-RR-deb"/>
                                     <constraint firstAttribute="width" constant="48" id="gDe-5j-Vr3"/>
@@ -203,7 +204,7 @@
         <!--Auth View Controller-->
         <scene sceneID="Enc-Hu-R63">
             <objects>
-                <viewController storyboardIdentifier="AuthViewController" id="cPi-ZW-gTJ" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AuthViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="cPi-ZW-gTJ" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="98S-xt-Gla">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -211,6 +212,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K0s-Yy-ZbI">
                                 <rect key="frame" x="16" y="646" width="361" height="48"/>
                                 <color key="backgroundColor" name="YP White"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="oZV-ja-8Mm"/>
                                 </constraints>
@@ -256,7 +258,7 @@
         <!--Web View View Controller-->
         <scene sceneID="fwV-Ot-afz">
             <objects>
-                <viewController id="usY-NX-8di" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="usY-NX-8di" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="g22-11-Qdh">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -276,6 +278,9 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="loQ-1o-ZJ8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="UnsplashWebView">
+                            <bool key="isElement" value="YES"/>
+                        </accessibility>
                         <constraints>
                             <constraint firstItem="aib-lg-kOL" firstAttribute="top" secondItem="loQ-1o-ZJ8" secondAttribute="top" id="Ffp-05-C1t"/>
                             <constraint firstAttribute="bottom" secondItem="dqt-ZI-uiS" secondAttribute="bottom" id="HW4-86-XmW"/>
